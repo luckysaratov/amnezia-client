@@ -25,6 +25,10 @@ class ReconnectController : public QObject
     Q_PROPERTY(int intervalSeconds READ intervalSeconds WRITE setIntervalSeconds NOTIFY intervalSecondsChanged)
     Q_PROPERTY(int failThreshold READ failThreshold WRITE setFailThreshold NOTIFY failThresholdChanged)
     Q_PROPERTY(int failMode READ failMode WRITE setFailMode NOTIFY failModeChanged)
+    // Резервный сервер: при обрыве переключаемся на него, а текущий становится резервным
+    Q_PROPERTY(bool failoverEnabled READ isFailoverEnabled WRITE setFailoverEnabled NOTIFY failoverChanged)
+    Q_PROPERTY(QString backupServerId READ backupServerId WRITE setBackupServerId NOTIFY failoverChanged)
+    Q_PROPERTY(QString backupServerName READ backupServerName NOTIFY failoverChanged)
     Q_PROPERTY(bool randomOrder READ isRandomOrder WRITE setRandomOrder NOTIFY randomOrderChanged)
     Q_PROPERTY(int stuckTimeoutSeconds READ stuckTimeoutSeconds WRITE setStuckTimeoutSeconds NOTIFY stuckTimeoutSecondsChanged)
     Q_PROPERTY(int pauseSeconds READ pauseSeconds WRITE setPauseSeconds NOTIFY pauseSecondsChanged)
@@ -104,7 +108,16 @@ public:
     void setLogHostTest(bool enabled);
     QString logFilePath() const;
 
+    bool isFailoverEnabled() const;
+    void setFailoverEnabled(bool enabled);
+    QString backupServerId() const;
+    void setBackupServerId(const QString &serverId);
+    QString backupServerName() const;
+
 public slots:
+    // Список серверов для выбора резервного: «id», «название»
+    QStringList serverIds() const;
+    QStringList serverNames() const;
     // Convenience helpers for the QML list editor.
     void addHost(const QString &host);
     void removeHost(int index);
@@ -119,6 +132,7 @@ public slots:
     void clearLog();
 
 signals:
+    void failoverChanged();
     void enabledChanged();
     void intervalSecondsChanged();
     void failThresholdChanged();
@@ -148,6 +162,8 @@ private:
     void concludeCheck(bool healthy);
     void triggerReconnect();
     void startReconnectAttempt(); // disconnect if needed, then (re)open the connection
+    // Меняет местами основной и резервный сервер. false — переключаться некуда.
+    bool swapToBackup();
     void openReconnect();         // open the default server connection
     void setStatusText(const QString &text);
     void setLastCheckDetails(const QString &text);

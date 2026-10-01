@@ -190,6 +190,66 @@ PageType {
             }
 
             //
+            // Резервный сервер
+            //
+            Header2Type {
+                Layout.fillWidth: true
+                Layout.topMargin: 32
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
+
+                headerText: qsTr("Backup server")
+            }
+
+            SwitcherType {
+                Layout.fillWidth: true
+                Layout.topMargin: 16
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
+
+                text: qsTr("Switch to the backup server")
+                descriptionText: qsTr("On connection loss, connect to the backup server; the previous one becomes the backup")
+
+                checked: ReconnectController.failoverEnabled
+                onToggled: function() {
+                    if (checked !== ReconnectController.failoverEnabled) {
+                        ReconnectController.failoverEnabled = checked
+                    }
+                }
+            }
+
+            Repeater {
+                model: ReconnectController.failoverEnabled ? ReconnectController.serverNames() : []
+
+                delegate: ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 0
+
+                    readonly property string serverId: ReconnectController.serverIds()[index]
+
+                    VerticalRadioButton {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 16
+                        Layout.rightMargin: 16
+
+                        checked: ReconnectController.backupServerId === parent.serverId
+                        text: modelData
+                        descriptionText: ServersUiController.defaultServerId === parent.serverId
+                                         ? qsTr("Current server") : ""
+
+                        // текущий сервер нельзя выбрать резервным
+                        enabled: ServersUiController.defaultServerId !== parent.serverId
+
+                        onClicked: function() {
+                            ReconnectController.backupServerId = parent.serverId
+                        }
+                    }
+
+                    DividerType {}
+                }
+            }
+
+            //
             // Stuck-connection recovery
             //
             Header2Type {

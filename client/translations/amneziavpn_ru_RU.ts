@@ -7447,6 +7447,22 @@ Remove the server from the app to continue.</source>
         <source>Watchdog reconnects, with the reason</source>
         <translation>Переподключения сторожа с указанием причины</translation>
     </message>
+    <message>
+        <source>Backup server</source>
+        <translation>Резервный сервер</translation>
+    </message>
+    <message>
+        <source>Switch to the backup server</source>
+        <translation>Переключаться на резервный сервер</translation>
+    </message>
+    <message>
+        <source>On connection loss, connect to the backup server; the previous one becomes the backup</source>
+        <translation>При потере связи подключаться к резервному серверу; прежний станет резервным</translation>
+    </message>
+    <message>
+        <source>Current server</source>
+        <translation>Текущий сервер</translation>
+    </message>
 </context>
 <context>
     <name>ReconnectController</name>
@@ -7605,6 +7621,10 @@ Remove the server from the app to continue.</source>
     <message>
         <source>unreachable: %1</source>
         <translation>недоступны: %1</translation>
+    </message>
+    <message>
+        <source>Failover: switching to backup server &quot;%1&quot;</source>
+        <translation>Переключение на резервный сервер «%1»</translation>
     </message>
 </context>
 </TS>

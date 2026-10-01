@@ -619,6 +619,26 @@ void SecureAppSettingsRepository::setReconnectStuckTimeoutSeconds(int seconds)
     setValue("Conf/reconnectStuckTimeoutSeconds", seconds < 10 ? 10 : seconds);
 }
 
+bool SecureAppSettingsRepository::isReconnectFailoverEnabled() const
+{
+    return value("Conf/reconnectFailoverEnabled", false).toBool();
+}
+
+void SecureAppSettingsRepository::setReconnectFailoverEnabled(bool enabled)
+{
+    setValue("Conf/reconnectFailoverEnabled", enabled);
+}
+
+QString SecureAppSettingsRepository::reconnectBackupServerId() const
+{
+    return value("Conf/reconnectBackupServerId", QString()).toString();
+}
+
+void SecureAppSettingsRepository::setReconnectBackupServerId(const QString &serverId)
+{
+    setValue("Conf/reconnectBackupServerId", serverId);
+}
+
 int SecureAppSettingsRepository::reconnectPauseSeconds() const
 {
     int seconds = value("Conf/reconnectPauseSeconds", 10).toInt();

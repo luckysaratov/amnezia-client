@@ -126,6 +126,10 @@ public:
     void setReconnectLogCategories(int categories);
     int reconnectStuckTimeoutSeconds() const;
     void setReconnectStuckTimeoutSeconds(int seconds);
+    bool isReconnectFailoverEnabled() const;
+    void setReconnectFailoverEnabled(bool enabled);
+    QString reconnectBackupServerId() const;
+    void setReconnectBackupServerId(const QString &serverId);
     int reconnectPauseSeconds() const;
     void setReconnectPauseSeconds(int seconds);
 

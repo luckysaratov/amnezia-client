@@ -175,6 +175,79 @@ bool ReconnectController::isRandomOrder() const
     return m_appSettingsRepository->isReconnectRandomOrder();
 }
 
+bool ReconnectController::isFailoverEnabled() const
+{
+    return m_appSettingsRepository->isReconnectFailoverEnabled();
+}
+
+void ReconnectController::setFailoverEnabled(bool enabled)
+{
+    if (enabled == isFailoverEnabled()) {
+        return;
+    }
+    m_appSettingsRepository->setReconnectFailoverEnabled(enabled);
+    emit failoverChanged();
+}
+
+QString ReconnectController::backupServerId() const
+{
+    return m_appSettingsRepository->reconnectBackupServerId();
+}
+
+void ReconnectController::setBackupServerId(const QString &serverId)
+{
+    if (serverId == backupServerId()) {
+        return;
+    }
+    m_appSettingsRepository->setReconnectBackupServerId(serverId);
+    emit failoverChanged();
+}
+
+QString ReconnectController::backupServerName() const
+{
+    const QString id = backupServerId();
+    if (id.isEmpty() || m_serversController->indexOfServerId(id) < 0) {
+        return QString();
+    }
+    return m_serversController->notificationDisplayName(id);
+}
+
+QStringList ReconnectController::serverIds() const
+{
+    QStringList ids;
+    for (int i = 0; i < m_serversController->getServersCount(); ++i) {
+        ids << m_serversController->getServerId(i);
+    }
+    return ids;
+}
+
+QStringList ReconnectController::serverNames() const
+{
+    QStringList names;
+    for (const QString &id : serverIds()) {
+        names << m_serversController->notificationDisplayName(id);
+    }
+    return names;
+}
+
+bool ReconnectController::swapToBackup()
+{
+    if (!isFailoverEnabled()) {
+        return false;
+    }
+    const QString backup = backupServerId();
+    const QString current = m_serversController->getDefaultServerId();
+    if (backup.isEmpty() || backup == current || m_serversController->indexOfServerId(backup) < 0) {
+        return false;
+    }
+    m_serversController->setDefaultServer(backup);
+    m_appSettingsRepository->setReconnectBackupServerId(current);
+    emit failoverChanged();
+    logEvent(LogAutoReconnect, tr("Failover: switching to backup server \"%1\"")
+                                   .arg(m_serversController->notificationDisplayName(backup)));
+    return true;
+}
+
 void ReconnectController::setRandomOrder(bool enabled)
 {
     if (enabled == isRandomOrder()) {
@@ -674,6 +747,7 @@ void ReconnectController::triggerReconnect()
     qCInfo(logReconnect) << "Ping check failed, reconnecting VPN";
     logEvent(LogAutoReconnect, tr("Auto-reconnect triggered (%1)").arg(m_lastUnreachableReason));
     m_autoReconnectActive = true;
+    swapToBackup();
     startReconnectAttempt();
 }
 
@@ -720,6 +794,9 @@ void ReconnectController::onStuckTimeout()
                  .arg(stuckTimeoutSeconds())
                  .arg(pauseSeconds()));
     setStatusText(tr("Connect stuck, pausing before retry..."));
+
+    // Если подключение к серверу зависло, следующая попытка пойдёт на резервный
+    swapToBackup();
 
     // Abort the hung attempt and wait out the cooldown.
     m_reconnectPending = false;
