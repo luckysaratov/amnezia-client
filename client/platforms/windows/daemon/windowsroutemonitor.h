@@ -13,6 +13,7 @@
 
 #include <QHash>
 #include <QMap>
+#include <QVector>
 #include <QObject>
 
 #include "ipaddress.h"
@@ -27,6 +28,8 @@ class WindowsRouteMonitor final : public QObject {
   void setDetaultRouteCapture(bool enable);
 
   bool addExclusionRoute(const IPAddress& prefix);
+  // Пакетное добавление: таблица маршрутов читается один раз (быстро для тысяч подсетей)
+  bool addExclusionRoutes(const QList<IPAddress>& prefixes);
   bool deleteExclusionRoute(const IPAddress& prefix);
   void flushExclusionRoutes() { return flushRouteTable(m_exclusionRoutes); };
 
@@ -42,7 +45,11 @@ class WindowsRouteMonitor final : public QObject {
   static QHostAddress prefixToAddress(const IP_ADDRESS_PREFIX* dest);
 
   void flushRouteTable(QHash<IPAddress, MIB_IPFORWARD_ROW2*>& table);
-  void updateExclusionRoute(MIB_IPFORWARD_ROW2* data, void* table);
+  typedef QVector<const MIB_IPFORWARD_ROW2*> RouteCandidates;
+  // Выбирает из таблицы маршруты, пригодные как «следующий переход» для исключений
+  RouteCandidates collectCandidates(void* table) const;
+  void updateExclusionRoute(MIB_IPFORWARD_ROW2* data, const RouteCandidates& candidates);
+  static MIB_IPFORWARD_ROW2* makeExclusionRow(const IPAddress& prefix);
   void updateInterfaceMetrics(int family);
   void updateCapturedRoutes(int family);
   void updateCapturedRoutes(int family, void* table);

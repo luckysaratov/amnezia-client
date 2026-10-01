@@ -312,6 +312,11 @@ bool WireguardUtilsWindows::addExclusionRoute(const IPAddress& prefix) {
   return m_routeMonitor->addExclusionRoute(prefix);
 }
 
+bool WireguardUtilsWindows::addExclusionRoutes(
+    const QList<IPAddress>& prefixes) {
+  return m_routeMonitor->addExclusionRoutes(prefixes);
+}
+
 bool WireguardUtilsWindows::deleteExclusionRoute(const IPAddress& prefix) {
   return m_routeMonitor->deleteExclusionRoute(prefix);
 }

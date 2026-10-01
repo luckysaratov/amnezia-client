@@ -5,6 +5,7 @@
 #include "daemon.h"
 
 #include <QCoreApplication>
+#include <QHash>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -132,9 +133,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   }
 
   // Configure routing for excluded addresses.
-  for (const QString& i : config.m_excludedAddresses) {
-    addExclusionRoute(IPAddress(i));
-  }
+  addExclusionRoutes(config.m_excludedAddresses);
 
   // Add the peer to this interface.
   if (!wgutils()->updatePeer(config)) {
@@ -219,6 +218,35 @@ bool Daemon::addExclusionRoute(const IPAddress& prefix) {
   }
   m_excludedAddrSet[prefix] = 1;
   return true;
+}
+
+// Пакетное добавление: учитывает счётчики ссылок, новые маршруты добавляются одним вызовом
+bool Daemon::addExclusionRoutes(const QStringList& addresses) {
+  QList<IPAddress> fresh;
+  QHash<IPAddress, int> pending;  // сколько раз встретился новый маршрут в списке
+  for (const QString& i : addresses) {
+    const IPAddress prefix(i);
+    if (m_excludedAddrSet.contains(prefix)) {
+      m_excludedAddrSet[prefix]++;
+      continue;
+    }
+    auto it = pending.find(prefix);
+    if (it != pending.end()) {
+      it.value()++;
+      continue;
+    }
+    pending.insert(prefix, 1);
+    fresh.append(prefix);
+  }
+  if (fresh.isEmpty()) {
+    return true;
+  }
+  logger.debug() << "Adding exclusion routes:" << fresh.size();
+  bool ok = wgutils()->addExclusionRoutes(fresh);
+  for (const IPAddress& prefix : fresh) {
+    m_excludedAddrSet[prefix] = pending.value(prefix, 1);
+  }
+  return ok;
 }
 
 bool Daemon::delExclusionRoute(const IPAddress& prefix) {
@@ -546,9 +574,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
       m_connections.value(config.m_hopType).m_config;
 
   // Configure routing for new excluded addresses.
-  for (const QString& i : config.m_excludedAddresses) {
-    addExclusionRoute(IPAddress(i));
-  }
+  addExclusionRoutes(config.m_excludedAddresses);
 
   // Activate the new peer and its routes.
   if (!wgutils()->updatePeer(config)) {

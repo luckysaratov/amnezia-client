@@ -4958,6 +4958,58 @@ Create one from the current settings.</source>
         <source>Add imported sites to existing ones</source>
         <translation>Добавить импортированные сайты к существующим</translation>
     </message>
+    <message>
+        <source>Russian subnets list updated: %1</source>
+        <translation>Список российских подсетей обновлён: %1</translation>
+    </message>
+    <message>
+        <source>Failed to update the Russian subnets list</source>
+        <translation>Не удалось обновить список российских подсетей</translation>
+    </message>
+    <message>
+        <source>Exclude Russian traffic</source>
+        <translation>Исключить российский трафик</translation>
+    </message>
+    <message>
+        <source>Russian IP addresses (%1 subnets) go directly, bypassing the VPN</source>
+        <translation>Российские IP-адреса (подсетей: %1) идут напрямую, минуя VPN</translation>
+    </message>
+    <message>
+        <source>Exclude local traffic</source>
+        <translation>Исключить локальный трафик</translation>
+    </message>
+    <message>
+        <source>Local networks (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) go directly, bypassing the VPN</source>
+        <translation>Локальные сети (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) идут напрямую, минуя VPN</translation>
+    </message>
+    <message>
+        <source>Unavailable in the &quot;only the sites listed&quot; mode</source>
+        <translation>Недоступно в режиме «только перечисленные сайты»</translation>
+    </message>
+    <message>
+        <source>Works for AmneziaWG and WireGuard. Applied on the next connection.</source>
+        <translation>Работает для AmneziaWG и WireGuard. Применяется при следующем подключении.</translation>
+    </message>
+    <message>
+        <source>Update the list automatically</source>
+        <translation>Обновлять список автоматически</translation>
+    </message>
+    <message>
+        <source>Built-in list is used. Checked weekly.</source>
+        <translation>Используется встроенный список. Проверка раз в неделю.</translation>
+    </message>
+    <message>
+        <source>Updated: %1. Checked weekly.</source>
+        <translation>Обновлён: %1. Проверка раз в неделю.</translation>
+    </message>
+    <message>
+        <source>Updating…</source>
+        <translation>Обновление…</translation>
+    </message>
+    <message>
+        <source>Update the list now</source>
+        <translation>Обновить список сейчас</translation>
+    </message>
 </context>
 <context>
     <name>PageSetupWizardApiFreeInfo</name>

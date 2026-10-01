@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/split_tunneling">
+        <file>ru_subnets.txt</file>
+    </qresource>
+</RCC>

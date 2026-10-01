@@ -158,6 +158,128 @@ PageType {
                 }
             }
         }
+
+        // Флажки не действуют в режиме «только перечисленные сайты»
+        readonly property bool extrasAvailable: root.pageEnabled
+                && !(IpSplitTunnelingController.isSplitTunnelingEnabled
+                     && IpSplitTunnelingController.routeMode === routeMode.onlyForwardSites)
+
+        SwitcherType {
+            id: excludeRussiaSwitch
+
+            Layout.fillWidth: true
+            Layout.topMargin: 16
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
+
+            enabled: header.extrasAvailable
+
+            text: qsTr("Exclude Russian traffic")
+            descriptionText: qsTr("Russian IP addresses (%1 subnets) go directly, bypassing the VPN").arg(SplitTunnelingExtrasController.subnetsCount)
+
+            checked: SplitTunnelingExtrasController.excludeRussia
+            onToggled: function() {
+                if (checked !== SplitTunnelingExtrasController.excludeRussia) {
+                    SplitTunnelingExtrasController.excludeRussia = checked
+                }
+            }
+        }
+
+        SwitcherType {
+            id: excludeLocalSwitch
+
+            Layout.fillWidth: true
+            Layout.topMargin: 8
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
+
+            enabled: header.extrasAvailable
+
+            text: qsTr("Exclude local traffic")
+            descriptionText: qsTr("Local networks (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) go directly, bypassing the VPN")
+
+            checked: SplitTunnelingExtrasController.excludeLocal
+            onToggled: function() {
+                if (checked !== SplitTunnelingExtrasController.excludeLocal) {
+                    SplitTunnelingExtrasController.excludeLocal = checked
+                }
+            }
+        }
+
+        SmallTextType {
+            Layout.fillWidth: true
+            Layout.topMargin: 8
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
+
+            wrapMode: Text.Wrap
+            color: AmneziaStyle.color.mutedGray
+            visible: SplitTunnelingExtrasController.excludeRussia || SplitTunnelingExtrasController.excludeLocal || !header.extrasAvailable
+
+            text: !header.extrasAvailable && root.pageEnabled
+                  ? qsTr("Unavailable in the \"only the sites listed\" mode")
+                  : qsTr("Works for AmneziaWG and WireGuard. Applied on the next connection.")
+        }
+
+        SwitcherType {
+            id: ruAutoUpdateSwitch
+
+            Layout.fillWidth: true
+            Layout.topMargin: 8
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
+
+            enabled: root.pageEnabled
+            visible: SplitTunnelingExtrasController.excludeRussia
+
+            text: qsTr("Update the list automatically")
+            descriptionText: SplitTunnelingExtrasController.updatedAtText === ""
+                             ? qsTr("Built-in list is used. Checked weekly.")
+                             : qsTr("Updated: %1. Checked weekly.").arg(SplitTunnelingExtrasController.updatedAtText)
+
+            checked: SplitTunnelingExtrasController.autoUpdate
+            onToggled: function() {
+                if (checked !== SplitTunnelingExtrasController.autoUpdate) {
+                    SplitTunnelingExtrasController.autoUpdate = checked
+                }
+            }
+        }
+
+        BasicButtonType {
+            Layout.fillWidth: true
+            Layout.topMargin: 8
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
+
+            visible: SplitTunnelingExtrasController.excludeRussia
+            enabled: !SplitTunnelingExtrasController.updating
+
+            defaultColor: AmneziaStyle.color.transparent
+            hoveredColor: AmneziaStyle.color.translucentWhite
+            pressedColor: AmneziaStyle.color.sheerWhite
+            disabledColor: AmneziaStyle.color.mutedGray
+            textColor: AmneziaStyle.color.paleGray
+            borderWidth: 1
+
+            text: SplitTunnelingExtrasController.updating ? qsTr("Updating…") : qsTr("Update the list now")
+
+            clickedFunc: function() {
+                SplitTunnelingExtrasController.updateSubnets()
+            }
+        }
+    }
+
+    // Быстрые флажки: исключить российский / локальный трафик из туннеля
+    Connections {
+        target: SplitTunnelingExtrasController
+
+        function onUpdateFinished(ok, count) {
+            if (ok) {
+                PageController.showNotificationMessage(qsTr("Russian subnets list updated: %1").arg(count))
+            } else {
+                PageController.showNotificationMessage(qsTr("Failed to update the Russian subnets list"))
+            }
+        }
     }
 
     ListViewType {

@@ -28,6 +28,7 @@
 #include "ui/controllers/languageUiController.h"
 #include "ui/controllers/updateUiController.h"
 #include "ui/controllers/reconnectController.h"
+#include "ui/controllers/splitTunnelingExtrasController.h"
 #include "ui/controllers/api/servicesCatalogUiController.h"
 #include "ui/controllers/networkReachabilityController.h"
 
@@ -199,6 +200,7 @@ private:
     ExportController* m_exportController;
     ConnectionController* m_connectionController;
     ReconnectController* m_reconnectController = nullptr;
+    SplitTunnelingExtrasController* m_splitTunnelingExtrasController = nullptr;
     SettingsController* m_settingsController;
 
     ContainersModel* m_containersModel;

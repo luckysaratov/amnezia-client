@@ -324,6 +324,36 @@ void SecureAppSettingsRepository::writeGatewayProxyUrls(const QString &cacheKey,
     setValue(QStringLiteral("Conf/proxyUrls/") + cacheKey, proxyUrlsEncrypted);
 }
 
+bool SecureAppSettingsRepository::isExcludeRussianTraffic() const
+{
+    return value("Conf/excludeRussianTraffic", false).toBool();
+}
+
+void SecureAppSettingsRepository::setExcludeRussianTraffic(bool enabled)
+{
+    setValue("Conf/excludeRussianTraffic", enabled);
+}
+
+bool SecureAppSettingsRepository::isExcludeLocalTraffic() const
+{
+    return value("Conf/excludeLocalTraffic", false).toBool();
+}
+
+void SecureAppSettingsRepository::setExcludeLocalTraffic(bool enabled)
+{
+    setValue("Conf/excludeLocalTraffic", enabled);
+}
+
+bool SecureAppSettingsRepository::isRussianSubnetsAutoUpdateEnabled() const
+{
+    return value("Conf/russianSubnetsAutoUpdate", true).toBool();
+}
+
+void SecureAppSettingsRepository::setRussianSubnetsAutoUpdateEnabled(bool enabled)
+{
+    setValue("Conf/russianSubnetsAutoUpdate", enabled);
+}
+
 bool SecureAppSettingsRepository::isKillSwitchEnabled() const
 {
     return value("Conf/killSwitchEnabled", true).toBool();

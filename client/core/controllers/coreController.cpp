@@ -180,6 +180,10 @@ void CoreController::initControllers()
     m_reconnectController = new ReconnectController(m_connectionController, m_serversController, m_appSettingsRepository, this);
     setQmlContextProperty("ReconnectController", m_reconnectController);
 
+    // Флажки раздельного туннеля: исключить российский / локальный трафик
+    m_splitTunnelingExtrasController = new SplitTunnelingExtrasController(m_appSettingsRepository, this);
+    setQmlContextProperty("SplitTunnelingExtrasController", m_splitTunnelingExtrasController);
+
     if (m_engine) {
         m_focusController = new FocusController(m_engine, this);
         setQmlContextProperty("FocusController", m_focusController);

@@ -66,6 +66,14 @@ public:
     QByteArray readGatewayProxyUrls(const QString &cacheKey) const;
     void writeGatewayProxyUrls(const QString &cacheKey, const QByteArray &proxyUrlsEncrypted);
 
+    // Раздельный туннель: быстрые флажки «исключить российский трафик» и «исключить локальный трафик»
+    bool isExcludeRussianTraffic() const;
+    void setExcludeRussianTraffic(bool enabled);
+    bool isExcludeLocalTraffic() const;
+    void setExcludeLocalTraffic(bool enabled);
+    bool isRussianSubnetsAutoUpdateEnabled() const;
+    void setRussianSubnetsAutoUpdateEnabled(bool enabled);
+
     bool isKillSwitchEnabled() const;
     void setKillSwitchEnabled(bool enabled);
     bool isStrictKillSwitchEnabled() const;

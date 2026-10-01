@@ -4,6 +4,7 @@
 #include <QEventLoop>
 #include <QFile>
 #include <QHostInfo>
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
 #include <QSharedPointer>
@@ -32,6 +33,7 @@
 
 #include "core/utils/networkUtilities.h"
 #include "core/utils/serverConfigUtils.h"
+#include "core/utils/splitTunnelingExtras.h"
 #include "vpnConnection.h"
 
 using namespace ProtocolUtils;
@@ -493,6 +495,48 @@ void VpnConnection::appendSplitTunnelingConfig()
             }
         }
     }
+
+#ifdef AMNEZIA_DESKTOP
+    // Флажки «Исключить российский трафик» / «Исключить локальный трафик» (только для AWG/WireGuard).
+    // Работают как режим «все, кроме списка»: к сайтам пользователя добавляются подсети РФ и/или
+    // локальные сети. В режиме «только перечисленные сайты» флажки не действуют.
+    const bool isWgFamily = (protocolName == ProtocolUtils::protoToString(Proto::Awg)
+                             || protocolName == ProtocolUtils::protoToString(Proto::WireGuard));
+    const bool excludeRussia = m_appSettingsRepository->isExcludeRussianTraffic();
+    const bool excludeLocal = m_appSettingsRepository->isExcludeLocalTraffic();
+    if (isWgFamily && allowSiteBasedSplitTunneling && (excludeRussia || excludeLocal)
+        && routeMode != amnezia::RouteMode::VpnOnlyForwardSites) {
+        // Адреса внутри туннеля должны остаться в нём: клиентская подсеть (адрес клиента и шлюз) и DNS
+        QStringList holes;
+        const QJsonObject protoConfig = m_vpnConfiguration.value(protocolName + "_config_data").toObject();
+        const QString clientIp = protoConfig.value(configKey::clientIp).toString().split('/').first().trimmed();
+        if (!clientIp.isEmpty()) {
+            holes.append(clientIp + "/24");
+        }
+        for (const QString &dnsKey : { QString(configKey::dns1), QString(configKey::dns2) }) {
+            const QString dns = m_vpnConfiguration.value(dnsKey).toString().trimmed();
+            if (!dns.isEmpty()) {
+                holes.append(dns);
+            }
+        }
+
+        const QStringList extras = SplitTunnelingExtras::buildExclusions(excludeRussia, excludeLocal, holes);
+        QStringList merged;
+        for (const auto &v : sitesJsonArray) {
+            merged.append(v.toString());
+        }
+        merged.append(extras);
+        merged.removeDuplicates();
+
+        sitesJsonArray = QJsonArray();
+        for (const QString &item : merged) {
+            sitesJsonArray.append(item);
+        }
+        routeMode = amnezia::RouteMode::VpnAllExceptSites;
+        qDebug() << QString("[SplitTunneling] исключить РФ: %1, исключить локальный: %2, добавлено подсетей: %3, всего исключений: %4")
+                            .arg(excludeRussia).arg(excludeLocal).arg(extras.size()).arg(merged.size());
+    }
+#endif
 
     m_vpnConfiguration.insert(configKey::splitTunnelType, routeMode);
     m_vpnConfiguration.insert(configKey::splitTunnelSites, sitesJsonArray);

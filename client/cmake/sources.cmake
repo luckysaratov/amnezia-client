@@ -60,6 +60,7 @@ set(HEADERS ${HEADERS}
     ${CMAKE_CURRENT_BINARY_DIR}/version.h
     ${CLIENT_ROOT_DIR}/core/utils/selfhosted/sshClient.h
     ${CLIENT_ROOT_DIR}/core/utils/networkUtilities.h
+    ${CLIENT_ROOT_DIR}/core/utils/splitTunnelingExtras.h
     ${CLIENT_ROOT_DIR}/core/utils/payloadSender.h
     ${CLIENT_ROOT_DIR}/core/utils/serialization/serialization.h
     ${CLIENT_ROOT_DIR}/core/utils/serialization/transfer.h
@@ -141,6 +142,7 @@ set(SOURCES ${SOURCES}
     ${CLIENT_ROOT_DIR}/core/protocols/vpnProtocol.cpp
     ${CLIENT_ROOT_DIR}/core/utils/selfhosted/sshClient.cpp
     ${CLIENT_ROOT_DIR}/core/utils/networkUtilities.cpp
+    ${CLIENT_ROOT_DIR}/core/utils/splitTunnelingExtras.cpp
     ${CLIENT_ROOT_DIR}/core/utils/payloadSender.cpp
     ${CLIENT_ROOT_DIR}/core/utils/serialization/outbound.cpp
     ${CLIENT_ROOT_DIR}/core/utils/serialization/inbound.cpp

@@ -46,6 +46,17 @@ class WireguardUtils : public QObject {
   
   virtual bool addExclusionRoute(const IPAddress& prefix) = 0;
   virtual bool deleteExclusionRoute(const IPAddress& prefix) = 0;
+  // Пакетное добавление маршрутов-исключений (для больших списков, например подсетей РФ).
+  // По умолчанию — по одному; платформы могут переопределить для ускорения.
+  virtual bool addExclusionRoutes(const QList<IPAddress>& prefixes) {
+    bool result = true;
+    for (const IPAddress& prefix : prefixes) {
+      if (!addExclusionRoute(prefix)) {
+        result = false;
+      }
+    }
+    return result;
+  }
 
   virtual bool excludeLocalNetworks(const QList<IPAddress>& addresses) = 0;
 };

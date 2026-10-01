@@ -115,26 +115,37 @@ void WindowsRouteMonitor::updateInterfaceMetrics(int family) {
   }
 }
 
-void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
-                                               void* ptable) {
+WindowsRouteMonitor::RouteCandidates WindowsRouteMonitor::collectCandidates(
+    void* ptable) const {
   PMIB_IPFORWARD_TABLE2 table = reinterpret_cast<PMIB_IPFORWARD_TABLE2>(ptable);
+  RouteCandidates result;
+  result.reserve(256);
+  for (ULONG i = 0; i < table->NumEntries; i++) {
+    const MIB_IPFORWARD_ROW2* row = &table->Table[i];
+    // Ignore routes into the VPN interface.
+    if (row->InterfaceLuid.Value == m_luid) {
+      continue;
+    }
+    // Ignore routes of our own creation.
+    if ((row->Protocol == MIB_IPPROTO_NETMGMT) &&
+        (row->Metric == EXCLUSION_ROUTE_METRIC)) {
+      continue;
+    }
+    result.append(row);
+  }
+  return result;
+}
+
+void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
+                                               const RouteCandidates& candidates) {
   SOCKADDR_INET nexthop = {};
   quint64 bestLuid = 0;
   int bestMatch = -1;
   ULONG bestMetric = ULONG_MAX;
 
   nexthop.si_family = data->DestinationPrefix.Prefix.si_family;
-  for (ULONG i = 0; i < table->NumEntries; i++) {
-    MIB_IPFORWARD_ROW2* row = &table->Table[i];
-    // Ignore routes into the VPN interface.
-    if (row->InterfaceLuid.Value == m_luid) {
-      continue;
-    }
+  for (const MIB_IPFORWARD_ROW2* row : candidates) {
     if (row->DestinationPrefix.PrefixLength < bestMatch) {
-      continue;
-    }
-    // Ignore routes of our own creation.
-    if ((row->Protocol == data->Protocol) && (row->Metric == data->Metric)) {
       continue;
     }
 
@@ -365,21 +376,8 @@ void WindowsRouteMonitor::updateCapturedRoutes(int family, void* ptable) {
   }
 }
 
-bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
-  logger.debug() << "Adding exclusion route for" << prefix.toString();
-
-  // Silently ignore non-routeable addresses.
-  QHostAddress addr = prefix.address();
-  if (addr.isLoopback() || addr.isBroadcast() || addr.isLinkLocal() ||
-      addr.isMulticast()) {
-    return true;
-  }
-
-  if (m_exclusionRoutes.contains(prefix)) {
-    logger.warning() << "Exclusion route already exists";
-    return false;
-  }
-
+MIB_IPFORWARD_ROW2* WindowsRouteMonitor::makeExclusionRow(
+    const IPAddress& prefix) {
   // Allocate and initialize the MIB routing table row.
   MIB_IPFORWARD_ROW2* data = new MIB_IPFORWARD_ROW2;
   InitializeIpForwardEntry(data);
@@ -408,6 +406,29 @@ bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
   data->Publish = false;
   data->Immortal = false;
   data->Age = 0;
+  return data;
+}
+
+static bool isNonRouteable(const IPAddress& prefix) {
+  QHostAddress addr = prefix.address();
+  return addr.isLoopback() || addr.isBroadcast() || addr.isLinkLocal() ||
+         addr.isMulticast();
+}
+
+bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
+  logger.debug() << "Adding exclusion route for" << prefix.toString();
+
+  // Silently ignore non-routeable addresses.
+  if (isNonRouteable(prefix)) {
+    return true;
+  }
+
+  if (m_exclusionRoutes.contains(prefix)) {
+    logger.warning() << "Exclusion route already exists";
+    return false;
+  }
+
+  MIB_IPFORWARD_ROW2* data = makeExclusionRow(prefix);
 
   PMIB_IPFORWARD_TABLE2 table;
   int family;
@@ -425,16 +446,67 @@ bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
   }
   updateInterfaceMetrics(family);
   updateCapturedRoutes(family, table);
-  updateExclusionRoute(data, table);
+  updateExclusionRoute(data, collectCandidates(table));
   FreeMibTable(table);
 
   m_exclusionRoutes[prefix] = data;
   return true;
 }
 
+bool WindowsRouteMonitor::addExclusionRoutes(const QList<IPAddress>& prefixes) {
+  if (prefixes.isEmpty()) {
+    return true;
+  }
+  logger.debug() << "Adding exclusion routes in a batch:" << prefixes.size();
+
+  // Таблицу маршрутов читаем по одному разу на семейство адресов.
+  PMIB_IPFORWARD_TABLE2 tables[2] = {nullptr, nullptr};
+  RouteCandidates candidates[2];
+  const int families[2] = {AF_INET, AF_INET6};
+  auto cleanup = qScopeGuard([&] {
+    for (int f = 0; f < 2; f++) {
+      if (tables[f]) FreeMibTable(tables[f]);
+    }
+  });
+
+  bool result = true;
+  int added = 0;
+  for (const IPAddress& prefix : prefixes) {
+    if (isNonRouteable(prefix)) {
+      continue;
+    }
+    if (m_exclusionRoutes.contains(prefix)) {
+      continue;
+    }
+    const int f =
+        (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) ? 1 : 0;
+    if (!tables[f]) {
+      DWORD err = GetIpForwardTable2(families[f], &tables[f]);
+      if (err != NO_ERROR) {
+        logger.error() << "Failed to fetch routing table:" << err;
+        tables[f] = nullptr;
+        result = false;
+        continue;
+      }
+      updateInterfaceMetrics(families[f]);
+      updateCapturedRoutes(families[f], tables[f]);
+      candidates[f] = collectCandidates(tables[f]);
+    }
+
+    MIB_IPFORWARD_ROW2* data = makeExclusionRow(prefix);
+    updateExclusionRoute(data, candidates[f]);
+    m_exclusionRoutes[prefix] = data;
+    added++;
+  }
+  logger.debug() << "Exclusion routes processed:" << added;
+  return result;
+}
+
 bool WindowsRouteMonitor::deleteExclusionRoute(const IPAddress& prefix) {
-  logger.debug() << "Deleting exclusion route for"
-                 << prefix.address().toString();
+  if (m_exclusionRoutes.size() < 100) {
+    logger.debug() << "Deleting exclusion route for"
+                   << prefix.address().toString();
+  }
 
   MIB_IPFORWARD_ROW2* data = m_exclusionRoutes.take(prefix);
   if (data == nullptr) {
@@ -492,8 +564,9 @@ void WindowsRouteMonitor::routeChanged() {
 
   updateInterfaceMetrics(AF_UNSPEC);
   updateCapturedRoutes(AF_UNSPEC, table);
+  const RouteCandidates candidates = collectCandidates(table);
   for (MIB_IPFORWARD_ROW2* data : m_exclusionRoutes) {
-    updateExclusionRoute(data, table);
+    updateExclusionRoute(data, candidates);
   }
 
   FreeMibTable(table);
