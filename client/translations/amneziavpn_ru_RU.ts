@@ -539,6 +539,14 @@ Already installed containers were found on the server. All installed containers 
         <source>Servers</source>
         <translation>Серверы</translation>
     </message>
+    <message>
+        <source>Auto-reconnects this session: %1 (last at %2)</source>
+        <translation>Автореконнектов за сессию: %1 (последний в %2)</translation>
+    </message>
+    <message>
+        <source>Auto-reconnects this session: %1</source>
+        <translation>Автореконнектов за сессию: %1</translation>
+    </message>
 </context>
 <context>
     <name>PageProtocolAwgClientSettings</name>
@@ -4283,6 +4291,14 @@ Create one from the current settings.</source>
         <source>Blocks network connections without VPN</source>
         <translation>Блокирует интернет-соединение без VPN</translation>
     </message>
+    <message>
+        <source>Auto-reconnect</source>
+        <translation>Автореконнект</translation>
+    </message>
+    <message>
+        <source>Reconnect the VPN when ping to your hosts fails</source>
+        <translation>Переподключать VPN, когда пинг до ваших хостов не проходит</translation>
+    </message>
 </context>
 <context>
     <name>PageSettingsDns</name>
@@ -7219,6 +7235,324 @@ Remove the server from the app to continue.</source>
         <location filename="../ui/qml/main2.qml" line="407"/>
         <source>Cannot remove server during active connection</source>
         <translation>Невозможно удалить сервер во время активного соединения</translation>
+    </message>
+</context>
+<context>
+    <name>PageSettingsReconnect</name>
+    <message>
+        <source>Add host</source>
+        <translation>Добавить хост</translation>
+    </message>
+    <message>
+        <source>All hosts are unreachable</source>
+        <translation>Все хосты недоступны</translation>
+    </message>
+    <message>
+        <source>Any host is unreachable</source>
+        <translation>Любой хост недоступен</translation>
+    </message>
+    <message>
+        <source>Auto-reconnect</source>
+        <translation>Автореконнект</translation>
+    </message>
+    <message>
+        <source>Auto-reconnects</source>
+        <translation>Автореконнекты</translation>
+    </message>
+    <message>
+        <source>Check interval, seconds</source>
+        <translation>Интервал проверки, секунд</translation>
+    </message>
+    <message>
+        <source>Check now</source>
+        <translation>Проверить сейчас</translation>
+    </message>
+    <message>
+        <source>Clear log</source>
+        <translation>Очистить журнал</translation>
+    </message>
+    <message>
+        <source>Connect / disconnect</source>
+        <translation>Подключение / отключение</translation>
+    </message>
+    <message>
+        <source>Connecting timeout, seconds</source>
+        <translation>Таймаут подключения, секунд</translation>
+    </message>
+    <message>
+        <source>Event log</source>
+        <translation>Журнал событий</translation>
+    </message>
+    <message>
+        <source>Failed checks in a row before reconnecting</source>
+        <translation>Неудачных проверок подряд до переподключения</translation>
+    </message>
+    <message>
+        <source>Host tests</source>
+        <translation>Тесты хостов</translation>
+    </message>
+    <message>
+        <source>Hosts to ping</source>
+        <translation>Хосты для проверки</translation>
+    </message>
+    <message>
+        <source>IP address or domain, e.g. 1.1.1.1</source>
+        <translation>IP-адрес или домен, например 1.1.1.1</translation>
+    </message>
+    <message>
+        <source>If a reconnect hangs while connecting, abort after the timeout, wait, then retry</source>
+        <translation>Если переподключение зависло, прервать его по таймауту, подождать и повторить</translation>
+    </message>
+    <message>
+        <source>Log cleared</source>
+        <translation>Журнал очищен</translation>
+    </message>
+    <message>
+        <source>Manual connection changes (you clicked)</source>
+        <translation>Ручные изменения подключения (ваши нажатия)</translation>
+    </message>
+    <message>
+        <source>More aggressive: reconnect as soon as a single host stops answering</source>
+        <translation>Агрессивнее: переподключаться, как только перестанет отвечать один хост</translation>
+    </message>
+    <message>
+        <source>Open log file</source>
+        <translation>Открыть файл журнала</translation>
+    </message>
+    <message>
+        <source>Pause before retry, seconds</source>
+        <translation>Пауза перед повтором, секунд</translation>
+    </message>
+    <message>
+        <source>Periodically pings the hosts below and reconnects the VPN when they are unreachable</source>
+        <translation>Периодически проверяет перечисленные хосты и переподключает VPN, когда они недоступны</translation>
+    </message>
+    <message>
+        <source>Ping checks</source>
+        <translation>Проверки пингом</translation>
+    </message>
+    <message>
+        <source>Ping in random order</source>
+        <translation>Пинговать в случайном порядке</translation>
+    </message>
+    <message>
+        <source>Reconnect when</source>
+        <translation>Переподключаться, когда</translation>
+    </message>
+    <message>
+        <source>Recovery settings saved</source>
+        <translation>Настройки восстановления сохранены</translation>
+    </message>
+    <message>
+        <source>Result of each periodic host check</source>
+        <translation>Результат каждой периодической проверки хостов</translation>
+    </message>
+    <message>
+        <source>Results of the manual Test button</source>
+        <translation>Результаты ручной кнопки «Тест»</translation>
+    </message>
+    <message>
+        <source>Safer: as long as one host answers, the connection is considered alive</source>
+        <translation>Безопаснее: пока отвечает хотя бы один хост, соединение считается живым</translation>
+    </message>
+    <message>
+        <source>Save recovery settings</source>
+        <translation>Сохранить настройки восстановления</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>Сохранить</translation>
+    </message>
+    <message>
+        <source>Settings saved</source>
+        <translation>Настройки сохранены</translation>
+    </message>
+    <message>
+        <source>Shuffles the host order on every check</source>
+        <translation>Перемешивает порядок хостов при каждой проверке</translation>
+    </message>
+    <message>
+        <source>Status</source>
+        <translation>Статус</translation>
+    </message>
+    <message>
+        <source>Stuck-connection recovery</source>
+        <translation>Восстановление зависшего подключения</translation>
+    </message>
+    <message>
+        <source>Test</source>
+        <translation>Тест</translation>
+    </message>
+    <message>
+        <source>Testing…</source>
+        <translation>Проверка…</translation>
+    </message>
+    <message>
+        <source>Timestamped .txt log. Choose which events to record — applied instantly.</source>
+        <translation>Текстовый журнал с метками времени. Выберите, какие события записывать, изменения применяются сразу.</translation>
+    </message>
+    <message>
+        <source>Watchdog reconnects, with the reason</source>
+        <translation>Переподключения сторожа с указанием причины</translation>
+    </message>
+</context>
+<context>
+    <name>ReconnectController</name>
+    <message>
+        <source>; unreachable: %1</source>
+        <translation>; недоступны: %1</translation>
+    </message>
+    <message>
+        <source>Auto-reconnect aborted: no server to reconnect to</source>
+        <translation>Автореконнект прерван: нет сервера для подключения</translation>
+    </message>
+    <message>
+        <source>Auto-reconnect state: %1</source>
+        <translation>Автореконнект, состояние: %1</translation>
+    </message>
+    <message>
+        <source>Auto-reconnect stuck in connecting for %1 s, pausing %2 s then retrying</source>
+        <translation>Автореконнект завис на подключении на %1 с, пауза %2 с и повтор</translation>
+    </message>
+    <message>
+        <source>Auto-reconnect triggered (%1)</source>
+        <translation>Запущен автореконнект (%1)</translation>
+    </message>
+    <message>
+        <source>Auto-reconnect: failed</source>
+        <translation>Автореконнект: не удался</translation>
+    </message>
+    <message>
+        <source>Auto-reconnect: openConnection failed</source>
+        <translation>Автореконнект: не удалось открыть подключение</translation>
+    </message>
+    <message>
+        <source>Auto-reconnect: reconnected successfully (session total: %1)</source>
+        <translation>Автореконнект: успешно переподключено (всего за сессию: %1)</translation>
+    </message>
+    <message>
+        <source>Auto-reconnect: resuming after pause</source>
+        <translation>Автореконнект: продолжение после паузы</translation>
+    </message>
+    <message>
+        <source>Check failed (%1 of %2)</source>
+        <translation>Проверка не пройдена (%1 из %2)</translation>
+    </message>
+    <message>
+        <source>Checking hosts...</source>
+        <translation>Проверка хостов...</translation>
+    </message>
+    <message>
+        <source>Connect stuck, pausing before retry...</source>
+        <translation>Подключение зависло, пауза перед повтором...</translation>
+    </message>
+    <message>
+        <source>Connection state: %1</source>
+        <translation>Состояние подключения: %1</translation>
+    </message>
+    <message>
+        <source>Disabled</source>
+        <translation>Выключено</translation>
+    </message>
+    <message>
+        <source>Enabled</source>
+        <translation>Включено</translation>
+    </message>
+    <message>
+        <source>Failed to run ping</source>
+        <translation>Не удалось запустить ping</translation>
+    </message>
+    <message>
+        <source>Hosts reachable</source>
+        <translation>Хосты доступны</translation>
+    </message>
+    <message>
+        <source>Hosts unreachable, reconnecting...</source>
+        <translation>Хосты недоступны, переподключение...</translation>
+    </message>
+    <message>
+        <source>IP: %1</source>
+        <translation>IP: %1</translation>
+    </message>
+    <message>
+        <source>Idle</source>
+        <translation>Ожидание</translation>
+    </message>
+    <message>
+        <source>Last check: %1/%2 hosts reachable</source>
+        <translation>Последняя проверка: доступно хостов %1/%2</translation>
+    </message>
+    <message>
+        <source>Log cleared</source>
+        <translation>Журнал очищен</translation>
+    </message>
+    <message>
+        <source>No hosts configured</source>
+        <translation>Хосты не заданы</translation>
+    </message>
+    <message>
+        <source>No response (host unreachable or ping blocked)</source>
+        <translation>Нет ответа (хост недоступен или ping заблокирован)</translation>
+    </message>
+    <message>
+        <source>No server to reconnect to</source>
+        <translation>Нет сервера для переподключения</translation>
+    </message>
+    <message>
+        <source>Packets: %1/%2 received (%3% loss)</source>
+        <translation>Пакеты: получено %1/%2 (потери %3%)</translation>
+    </message>
+    <message>
+        <source>Ping check: %1/%2 reachable</source>
+        <translation>Проверка пингом: доступно %1/%2</translation>
+    </message>
+    <message>
+        <source>RTT min/avg/max: %1/%2/%3 ms</source>
+        <translation>RTT мин/сред/макс: %1/%2/%3 мс</translation>
+    </message>
+    <message>
+        <source>RTT min/max/avg: %1/%2/%3 ms</source>
+        <translation>RTT мин/макс/сред: %1/%2/%3 мс</translation>
+    </message>
+    <message>
+        <source>Reconnect failed</source>
+        <translation>Не удалось переподключиться</translation>
+    </message>
+    <message>
+        <source>Reconnecting...</source>
+        <translation>Переподключение...</translation>
+    </message>
+    <message>
+        <source>Test %1: %2</source>
+        <translation>Тест %1: %2</translation>
+    </message>
+    <message>
+        <source>Watchdog disabled</source>
+        <translation>Сторож выключен</translation>
+    </message>
+    <message>
+        <source>Watchdog enabled (interval %1 s, threshold %2)</source>
+        <translation>Сторож включён (интервал %1 с, порог %2)</translation>
+    </message>
+    <message>
+        <source>[FAIL] %1 - unreachable</source>
+        <translation>[СБОЙ] %1 — недоступен</translation>
+    </message>
+    <message>
+        <source>[OK]   %1 - reachable</source>
+        <translation>[OK]   %1 — доступен</translation>
+    </message>
+    <message>
+        <source>all hosts unreachable</source>
+        <translation>все хосты недоступны</translation>
+    </message>
+    <message>
+        <source>not resolved</source>
+        <translation>не разрешено</translation>
+    </message>
+    <message>
+        <source>unreachable: %1</source>
+        <translation>недоступны: %1</translation>
     </message>
 </context>
 </TS>

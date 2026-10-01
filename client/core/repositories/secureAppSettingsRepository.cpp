@@ -484,3 +484,118 @@ void SecureAppSettingsRepository::setXraySavedConfigs(const QByteArray &data)
 {
     setValue("Xray/savedConfigs", data);
 }
+
+bool SecureAppSettingsRepository::isReconnectEnabled() const
+{
+    return value("Conf/reconnectEnabled", false).toBool();
+}
+
+void SecureAppSettingsRepository::setReconnectEnabled(bool enabled)
+{
+    setValue("Conf/reconnectEnabled", enabled);
+}
+
+int SecureAppSettingsRepository::reconnectIntervalSeconds() const
+{
+    // Интервал проверки в секундах (по умолчанию 5, минимум 1)
+    int seconds = value("Conf/reconnectIntervalSeconds", 5).toInt();
+    return seconds < 1 ? 1 : seconds;
+}
+
+void SecureAppSettingsRepository::setReconnectIntervalSeconds(int seconds)
+{
+    setValue("Conf/reconnectIntervalSeconds", seconds < 1 ? 1 : seconds);
+}
+
+int SecureAppSettingsRepository::reconnectFailThreshold() const
+{
+    // Сколько проверок подряд должно провалиться, прежде чем переподключаться (по умолчанию 3, минимум 1)
+    int count = value("Conf/reconnectFailThreshold", 3).toInt();
+    return count < 1 ? 1 : count;
+}
+
+void SecureAppSettingsRepository::setReconnectFailThreshold(int count)
+{
+    setValue("Conf/reconnectFailThreshold", count < 1 ? 1 : count);
+}
+
+QStringList SecureAppSettingsRepository::reconnectHosts() const
+{
+    // Stored as a newline-joined string so the secure settings backend only has to handle a plain QString.
+    const QString stored = value("Conf/reconnectHosts", QStringLiteral("1.1.1.1\n8.8.8.8")).toString();
+    QStringList hosts;
+    const auto parts = stored.split('\n', Qt::SkipEmptyParts);
+    for (const QString &part : parts) {
+        const QString trimmed = part.trimmed();
+        if (!trimmed.isEmpty()) {
+            hosts.append(trimmed);
+        }
+    }
+    return hosts;
+}
+
+void SecureAppSettingsRepository::setReconnectHosts(const QStringList &hosts)
+{
+    QStringList cleaned;
+    for (const QString &host : hosts) {
+        const QString trimmed = host.trimmed();
+        if (!trimmed.isEmpty()) {
+            cleaned.append(trimmed);
+        }
+    }
+    setValue("Conf/reconnectHosts", cleaned.join('\n'));
+}
+
+int SecureAppSettingsRepository::reconnectFailMode() const
+{
+    // 0 = reconnect only if all hosts are unreachable, 1 = reconnect if any host is unreachable
+    return value("Conf/reconnectFailMode", 0).toInt();
+}
+
+void SecureAppSettingsRepository::setReconnectFailMode(int mode)
+{
+    setValue("Conf/reconnectFailMode", mode);
+}
+
+bool SecureAppSettingsRepository::isReconnectRandomOrder() const
+{
+    return value("Conf/reconnectRandomOrder", false).toBool();
+}
+
+void SecureAppSettingsRepository::setReconnectRandomOrder(bool enabled)
+{
+    setValue("Conf/reconnectRandomOrder", enabled);
+}
+
+int SecureAppSettingsRepository::reconnectLogCategories() const
+{
+    // Bitmask of event categories written to the reconnect event log. Default: all enabled (15).
+    return value("Conf/reconnectLogCategories", 15).toInt();
+}
+
+void SecureAppSettingsRepository::setReconnectLogCategories(int categories)
+{
+    setValue("Conf/reconnectLogCategories", categories);
+}
+
+int SecureAppSettingsRepository::reconnectStuckTimeoutSeconds() const
+{
+    int seconds = value("Conf/reconnectStuckTimeoutSeconds", 30).toInt();
+    return seconds < 10 ? 10 : seconds;
+}
+
+void SecureAppSettingsRepository::setReconnectStuckTimeoutSeconds(int seconds)
+{
+    setValue("Conf/reconnectStuckTimeoutSeconds", seconds < 10 ? 10 : seconds);
+}
+
+int SecureAppSettingsRepository::reconnectPauseSeconds() const
+{
+    int seconds = value("Conf/reconnectPauseSeconds", 10).toInt();
+    return seconds < 5 ? 5 : seconds;
+}
+
+void SecureAppSettingsRepository::setReconnectPauseSeconds(int seconds)
+{
+    setValue("Conf/reconnectPauseSeconds", seconds < 5 ? 5 : seconds);
+}

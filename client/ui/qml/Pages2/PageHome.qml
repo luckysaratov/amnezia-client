@@ -352,9 +352,12 @@ PageType {
                     objectName: "rowLayoutLabel"
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     Layout.topMargin: 8
-                    Layout.bottomMargin: root.isOutdatedAwgWarningVisible
-                                         ? 8
-                                         : (root.isApiProtocolSelectionVisible ? 8 : (drawer.isCollapsedStateActive ? 44 : ServersUiController.isDefaultServerFromApi ? 61 : 16))
+                    // Если под строкой показан счётчик автореконнектов, нижний отступ переходит к нему
+                    Layout.bottomMargin: reconnectCounterLabel.visible
+                                         ? 2
+                                         : (root.isOutdatedAwgWarningVisible
+                                            ? 8
+                                            : (root.isApiProtocolSelectionVisible ? 8 : (drawer.isCollapsedStateActive ? 44 : ServersUiController.isDefaultServerFromApi ? 61 : 16)))
                     spacing: 0
 
                     BasicButtonType {
@@ -407,6 +410,27 @@ PageType {
                             }
                         }
                     }
+                }
+
+                // Счётчик автореконнектов за сессию (под строкой с протоколом и адресом сервера)
+                CaptionTextType {
+                    id: reconnectCounterLabel
+                    objectName: "reconnectCounterLabel"
+
+                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                    Layout.bottomMargin: root.isOutdatedAwgWarningVisible
+                                         ? 8
+                                         : (root.isApiProtocolSelectionVisible ? 8 : (drawer.isCollapsedStateActive ? 44 : ServersUiController.isDefaultServerFromApi ? 61 : 16))
+
+                    visible: ReconnectController.enabled || ReconnectController.sessionReconnectCount > 0
+
+                    color: ReconnectController.sessionReconnectCount > 0 ? AmneziaStyle.color.goldenApricot : AmneziaStyle.color.mutedGray
+                    font.pixelSize: 13
+                    horizontalAlignment: Text.AlignHCenter
+
+                    text: ReconnectController.sessionReconnectCount > 0
+                          ? qsTr("Auto-reconnects this session: %1 (last at %2)").arg(ReconnectController.sessionReconnectCount).arg(ReconnectController.lastReconnectTime)
+                          : qsTr("Auto-reconnects this session: %1").arg(0)
                 }
 
                 WarningType {

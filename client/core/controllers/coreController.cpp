@@ -176,6 +176,10 @@ void CoreController::initControllers()
     m_connectionUiController = new ConnectionUiController(m_connectionController, m_serversController, this);
     setQmlContextProperty("ConnectionController", m_connectionUiController);
 
+    // Автореконнект: периодически проверяет туннель и переподключает VPN при потере связи
+    m_reconnectController = new ReconnectController(m_connectionController, m_serversController, m_appSettingsRepository, this);
+    setQmlContextProperty("ReconnectController", m_reconnectController);
+
     if (m_engine) {
         m_focusController = new FocusController(m_engine, this);
         setQmlContextProperty("FocusController", m_focusController);

@@ -116,6 +116,7 @@
         <file>Pages2/PageSettingsDns.qml</file>
         <file>Pages2/PageSettingsKillSwitch.qml</file>
         <file>Pages2/PageSettingsKillSwitchExceptions.qml</file>
+        <file>Pages2/PageSettingsReconnect.qml</file>
         <file>Pages2/PageSettingsLogging.qml</file>
         <file>Pages2/PageSettingsServerData.qml</file>
         <file>Pages2/PageSettingsServerInfo.qml</file>

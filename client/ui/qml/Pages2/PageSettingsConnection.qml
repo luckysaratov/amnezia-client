@@ -151,6 +151,25 @@ PageType {
             DividerType {
                 visible: GC.isDesktop()
             }
+
+            LabelWithButtonType {
+                id: reconnectButton
+                visible: GC.isDesktop()
+
+                Layout.fillWidth: true
+
+                text: qsTr("Auto-reconnect")
+                descriptionText: qsTr("Reconnect the VPN when ping to your hosts fails")
+                rightImageSource: "qrc:/images/controls/chevron-right.svg"
+
+                clickedFunction: function() {
+                    PageController.goToPage(PageEnum.PageSettingsReconnect)
+                }
+            }
+
+            DividerType {
+                visible: GC.isDesktop()
+            }
         }
     }
 }

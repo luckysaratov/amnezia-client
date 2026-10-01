@@ -100,6 +100,27 @@ public:
     QByteArray xraySavedConfigs() const;
     void setXraySavedConfigs(const QByteArray &data);
 
+
+    // Auto-reconnect watchdog (pings a list of hosts periodically and reconnects the VPN if they are unreachable)
+    bool isReconnectEnabled() const;
+    void setReconnectEnabled(bool enabled);
+    int reconnectIntervalSeconds() const;
+    void setReconnectIntervalSeconds(int seconds);
+    int reconnectFailThreshold() const;
+    void setReconnectFailThreshold(int count);
+    QStringList reconnectHosts() const;
+    void setReconnectHosts(const QStringList &hosts);
+    int reconnectFailMode() const;
+    void setReconnectFailMode(int mode);
+    bool isReconnectRandomOrder() const;
+    void setReconnectRandomOrder(bool enabled);
+    int reconnectLogCategories() const;
+    void setReconnectLogCategories(int categories);
+    int reconnectStuckTimeoutSeconds() const;
+    void setReconnectStuckTimeoutSeconds(int seconds);
+    int reconnectPauseSeconds() const;
+    void setReconnectPauseSeconds(int seconds);
+
 signals:
     void appLanguageChanged(QLocale locale);
     void allowedDnsServersChanged(const QStringList &servers);

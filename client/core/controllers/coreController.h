@@ -27,6 +27,7 @@
 #include "ui/controllers/systemController.h"
 #include "ui/controllers/languageUiController.h"
 #include "ui/controllers/updateUiController.h"
+#include "ui/controllers/reconnectController.h"
 #include "ui/controllers/api/servicesCatalogUiController.h"
 #include "ui/controllers/networkReachabilityController.h"
 
@@ -197,6 +198,7 @@ private:
     InstallController* m_installController;
     ExportController* m_exportController;
     ConnectionController* m_connectionController;
+    ReconnectController* m_reconnectController = nullptr;
     SettingsController* m_settingsController;
 
     ContainersModel* m_containersModel;

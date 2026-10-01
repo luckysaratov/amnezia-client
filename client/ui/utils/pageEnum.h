@@ -40,6 +40,7 @@ namespace PageLoader
         PageSettingsApiDevices,
         PageSettingsApiSubscriptionKey,
         PageSettingsKillSwitchExceptions,
+        PageSettingsReconnect,
 
         PageServiceSftpSettings,
         PageServiceTorWebsiteSettings,
