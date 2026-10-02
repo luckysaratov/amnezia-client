@@ -517,7 +517,7 @@ void SecureAppSettingsRepository::setXraySavedConfigs(const QByteArray &data)
 
 bool SecureAppSettingsRepository::isReconnectEnabled() const
 {
-    return value("Conf/reconnectEnabled", false).toBool();
+    return value("Conf/reconnectEnabled", true).toBool();
 }
 
 void SecureAppSettingsRepository::setReconnectEnabled(bool enabled)

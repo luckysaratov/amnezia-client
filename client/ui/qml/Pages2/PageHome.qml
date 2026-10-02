@@ -422,7 +422,7 @@ PageType {
                                          ? 8
                                          : (root.isApiProtocolSelectionVisible ? 8 : (drawer.isCollapsedStateActive ? 44 : ServersUiController.isDefaultServerFromApi ? 61 : 16))
 
-                    visible: ReconnectController.enabled || ReconnectController.sessionReconnectCount > 0
+                    visible: true
 
                     color: ReconnectController.sessionReconnectCount > 0 ? AmneziaStyle.color.goldenApricot : AmneziaStyle.color.mutedGray
                     font.pixelSize: 13
